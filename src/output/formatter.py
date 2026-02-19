@@ -1,14 +1,18 @@
+from typing import Protocol
+
 from rich.console import Console
 from rich.panel import Panel
-from typing import Protocol
+
 
 class OutputFormatter(Protocol):
     def format(self, summary: str) -> str: ...
+
 
 class ConsoleFormatter:
     def format(self, summary: str) -> str:
         # Можно добавить markdown рендеринг в будущем
         return summary
+
 
 class Formatter:
     def __init__(self, formatter: OutputFormatter):

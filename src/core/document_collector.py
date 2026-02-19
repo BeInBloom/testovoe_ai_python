@@ -9,10 +9,10 @@ from src.readers.factory import ReaderFactory
 
 class DocumentCollector:
     def __init__(
-        self, 
-        reader_factory: ReaderFactory, 
+        self,
+        reader_factory: ReaderFactory,
         logger: Logger,
-        max_file_size_bytes: int = 10 * 1024 * 1024  # 10MB default
+        max_file_size_bytes: int = 10 * 1024 * 1024,  # 10MB default
     ):
         self._reader_factory = reader_factory
         self._logger = logger
@@ -71,8 +71,4 @@ class DocumentCollector:
         content = reader.read(file_path)
         size_bytes = file_path.stat().st_size
 
-        return Document(
-            path=file_path, 
-            size_bytes=size_bytes, 
-            content=content
-        )
+        return Document(path=file_path, size_bytes=size_bytes, content=content)

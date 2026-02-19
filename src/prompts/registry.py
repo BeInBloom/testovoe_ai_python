@@ -1,12 +1,15 @@
-import yaml
 from pathlib import Path
-from typing import Dict, Optional, List
+from typing import Dict, List, Optional
+
+import yaml
 from pydantic import BaseModel
+
 
 class PromptConfig(BaseModel):
     name: str
     description: str
     prompt: str
+
 
 class PromptRegistry:
     def __init__(self, prompts_path: str):
@@ -22,14 +25,16 @@ class PromptRegistry:
             self._load_single_file(file_path)
 
     def _find_yaml_files(self) -> List[Path]:
-        return list(self._prompts_path.glob("*.yaml")) + list(self._prompts_path.glob("*.yml"))
+        return list(self._prompts_path.glob("*.yaml")) + list(
+            self._prompts_path.glob("*.yml")
+        )
 
     def _load_single_file(self, file_path: Path) -> None:
         """Парсинг одного YAML файла."""
         try:
             with open(file_path, "r", encoding="utf-8") as f:
                 data = yaml.safe_load(f)
-                
+
             config = self._create_config(data, file_path)
             self._prompts[config.name] = config
         except Exception:

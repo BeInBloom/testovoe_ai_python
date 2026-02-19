@@ -1,5 +1,5 @@
-from typing import Protocol, List
 from pathlib import Path
+from typing import List, Protocol
 
 from src.domain.models import DocumentContent
 

@@ -1,6 +1,8 @@
-import easyocr
 from pathlib import Path
-from typing import List, Optional, Dict
+from typing import Dict, List, Optional
+
+import easyocr
+
 from src.domain.models import ContentType, DocumentContent
 
 

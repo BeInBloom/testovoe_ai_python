@@ -1,19 +1,19 @@
 from dependency_injector import containers, providers
 
-from src.core.logger import Logger
-from src.core.folder_scanner import FolderScanner
 from src.core.document_collector import DocumentCollector
-from src.core.summary_generator import SummaryGenerator
-from src.core.prompt_manager import PromptManager
 from src.core.document_service import DocumentService
-from src.prompts.registry import PromptRegistry
-from src.skills.registry import SkillRegistry
-from src.readers.factory import ReaderFactory
-from src.readers.txt_reader import TxtReader
-from src.readers.pdf_reader import PdfReader
-from src.readers.image_reader import ImageReader
+from src.core.folder_scanner import FolderScanner
+from src.core.logger import Logger
+from src.core.prompt_manager import PromptManager
+from src.core.summary_generator import SummaryGenerator
 from src.llm.openrouter import OpenRouterLLMProvider
 from src.output.formatter import ConsoleFormatter, Formatter
+from src.prompts.registry import PromptRegistry
+from src.readers.factory import ReaderFactory
+from src.readers.image_reader import ImageReader
+from src.readers.pdf_reader import PdfReader
+from src.readers.txt_reader import TxtReader
+from src.skills.registry import SkillRegistry
 
 
 def _mb_to_bytes(mb: int) -> int:
@@ -22,7 +22,7 @@ def _mb_to_bytes(mb: int) -> int:
 
 class Container(containers.DeclarativeContainer):
     config = providers.Configuration()
-    
+
     logger = providers.Singleton(
         Logger,
         name="main",

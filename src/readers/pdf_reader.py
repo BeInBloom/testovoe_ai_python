@@ -1,6 +1,8 @@
-import pdfplumber
 from pathlib import Path
 from typing import List, Optional
+
+import pdfplumber
+
 from src.domain.models import ContentType, DocumentContent
 
 

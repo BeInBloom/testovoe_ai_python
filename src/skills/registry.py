@@ -1,8 +1,11 @@
-import yaml
-import toml
 from pathlib import Path
-from typing import Dict, Any, Optional, List
+from typing import Any, Dict, Optional
+
+import toml
+import yaml
+
 from src.core.logger import Logger
+
 
 class SkillConfig:
     def __init__(
@@ -21,6 +24,7 @@ class SkillConfig:
         self.config = config
         self.prompt = prompt
 
+
 class SkillRegistry:
     def __init__(self, skills_path: str, logger: Logger):
         self._skills_path = Path(skills_path)
@@ -36,7 +40,7 @@ class SkillRegistry:
         self._load_from_format("*.yaml", self._load_yaml_file)
         self._load_from_format("*.yml", self._load_yaml_file)
         self._load_from_format("*.toml", self._load_toml_file)
-        
+
         self._logger.info(f"Loaded {len(self._skills)} skill(s)")
 
     def _load_from_format(self, pattern: str, loader_func: Any) -> None:

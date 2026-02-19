@@ -1,12 +1,11 @@
-import logging
+from typing import Any, Dict, List, Optional
+
 import requests
-from typing import Any, List, Dict, Optional
 from tenacity import (
     retry,
+    retry_if_exception_type,
     stop_after_attempt,
     wait_exponential,
-    retry_if_exception_type,
-    before_sleep_log,
 )
 
 from src.core.logger import Logger

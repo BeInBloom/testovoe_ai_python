@@ -1,5 +1,4 @@
-from typing import Protocol, Any, Dict
-from pathlib import Path
+from typing import Any, Dict, Protocol
 
 
 class Skill(Protocol):

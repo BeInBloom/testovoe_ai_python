@@ -1,7 +1,6 @@
 from pathlib import Path
 from typing import List, Optional
 
-from src.domain.models import DocumentContent
 from src.readers.contracts import DocumentReader
 
 

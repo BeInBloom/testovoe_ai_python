@@ -1,6 +1,8 @@
 from pathlib import Path
-from typing import List, Generator
+from typing import Generator
+
 from src.core.logger import Logger
+
 
 class FolderScanner:
     def __init__(

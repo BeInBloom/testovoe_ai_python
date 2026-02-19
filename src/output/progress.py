@@ -1,6 +1,7 @@
-from pathlib import Path
-from typing import Callable, List, Any
+from typing import Any, Callable, List
+
 from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn
+
 
 class FileProgress:
     def __init__(self, items: List[Any], description: str = "Processing"):
@@ -26,12 +27,12 @@ class FileProgress:
     def track(self, callback: Callable[[Any], None]) -> None:
         """Сценарий отслеживания прогресса выполнения."""
         task_id = self._progress.add_task(self._description, total=len(self._items))
-        
+
         for item in self._items:
             self._update_item(task_id, item)
             callback(item)
             self._progress.advance(task_id)
 
     def _update_item(self, task_id: Any, item: Any) -> None:
-        name = getattr(item, 'name', str(item))
+        name = getattr(item, "name", str(item))
         self._progress.update(task_id, description=f"{self._description}: {name}")
