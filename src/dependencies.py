@@ -1,0 +1,108 @@
+from dependency_injector import containers, providers
+
+from src.core.logger import Logger
+from src.core.folder_scanner import FolderScanner
+from src.core.document_collector import DocumentCollector
+from src.core.summary_generator import SummaryGenerator
+from src.core.prompt_manager import PromptManager
+from src.core.document_service import DocumentService
+from src.prompts.registry import PromptRegistry
+from src.skills.registry import SkillRegistry
+from src.readers.factory import ReaderFactory
+from src.readers.txt_reader import TxtReader
+from src.readers.pdf_reader import PdfReader
+from src.readers.image_reader import ImageReader
+from src.llm.openrouter import OpenRouterLLMProvider
+from src.output.formatter import ConsoleFormatter, Formatter
+
+
+def _mb_to_bytes(mb: int) -> int:
+    return mb * 1024 * 1024
+
+
+class Container(containers.DeclarativeContainer):
+    config = providers.Configuration()
+    
+    logger = providers.Singleton(
+        Logger,
+        name="main",
+        level="INFO",
+    )
+
+    prompt_registry = providers.Singleton(
+        PromptRegistry,
+        prompts_path=config.prompts_path,
+    )
+
+    skill_registry = providers.Singleton(
+        SkillRegistry,
+        skills_path=config.skills_path,
+        logger=logger,
+    )
+
+    prompt_manager = providers.Singleton(
+        PromptManager,
+        prompt_registry=prompt_registry,
+        skill_registry=skill_registry,
+        logger=logger,
+    )
+
+    txt_reader = providers.Singleton(TxtReader)
+    pdf_reader = providers.Singleton(PdfReader)
+    image_reader = providers.Singleton(ImageReader)
+
+    reader_factory = providers.Singleton(
+        ReaderFactory,
+        readers=providers.List(
+            txt_reader,
+            pdf_reader,
+            image_reader,
+        ),
+    )
+
+    llm_client = providers.Singleton(
+        OpenRouterLLMProvider,
+        api_key=config.openrouter_api_key,
+        model=config.openrouter_model,
+        logger=logger,
+        timeout=config.request_timeout,
+        max_retries=config.max_retries,
+    )
+
+    max_file_size_bytes = providers.Callable(
+        _mb_to_bytes,
+        config.max_file_size_mb,
+    )
+
+    folder_scanner = providers.Singleton(
+        FolderScanner,
+        logger=logger,
+        recursive=config.recursive_scan,
+    )
+
+    document_collector = providers.Singleton(
+        DocumentCollector,
+        reader_factory=reader_factory,
+        logger=logger,
+        max_file_size_bytes=max_file_size_bytes,
+    )
+
+    document_service = providers.Singleton(
+        DocumentService,
+        scanner=folder_scanner,
+        collector=document_collector,
+        logger=logger,
+    )
+
+    summary_generator = providers.Singleton(
+        SummaryGenerator,
+        llm_provider=llm_client,
+        logger=logger,
+    )
+
+    console_formatter = providers.Singleton(ConsoleFormatter)
+
+    formatter = providers.Singleton(
+        Formatter,
+        formatter=console_formatter,
+    )

@@ -1,0 +1,72 @@
+import yaml
+import toml
+from pathlib import Path
+from typing import Dict, Any, Optional, List
+from src.core.logger import Logger
+
+class SkillConfig:
+    def __init__(
+        self,
+        name: str,
+        description: str,
+        module: str,
+        class_name: str,
+        config: Dict[str, Any],
+        prompt: Optional[str] = None,
+    ):
+        self.name = name
+        self.description = description
+        self.module = module
+        self.class_name = class_name
+        self.config = config
+        self.prompt = prompt
+
+class SkillRegistry:
+    def __init__(self, skills_path: str, logger: Logger):
+        self._skills_path = Path(skills_path)
+        self._logger = logger
+        self._skills: Dict[str, SkillConfig] = {}
+
+    def load(self) -> None:
+        """Сценарий загрузки скиллов."""
+        self._logger.info(f"Loading skills from {self._skills_path}")
+        if not self._skills_path.exists():
+            return
+
+        self._load_from_format("*.yaml", self._load_yaml_file)
+        self._load_from_format("*.yml", self._load_yaml_file)
+        self._load_from_format("*.toml", self._load_toml_file)
+        
+        self._logger.info(f"Loaded {len(self._skills)} skill(s)")
+
+    def _load_from_format(self, pattern: str, loader_func: Any) -> None:
+        """Итерирует по файлам определенного формата."""
+        for file_path in self._skills_path.glob(pattern):
+            loader_func(file_path)
+
+    def _load_yaml_file(self, file_path: Path) -> None:
+        with open(file_path, "r", encoding="utf-8") as f:
+            data = yaml.safe_load(f)
+        self._add_skill(data, file_path)
+
+    def _load_toml_file(self, file_path: Path) -> None:
+        with open(file_path, "r", encoding="utf-8") as f:
+            data = toml.load(f)
+        self._add_skill(data, file_path)
+
+    def _add_skill(self, data: Dict, file_path: Path) -> None:
+        config = SkillConfig(
+            name=data.get("name", file_path.stem),
+            description=data.get("description", ""),
+            module=data.get("module", "src.skills"),
+            class_name=data.get("class", f"{file_path.stem.capitalize()}Skill"),
+            config=data.get("config", {}),
+            prompt=data.get("prompt"),
+        )
+        self._skills[config.name] = config
+
+    def get(self, name: str) -> Optional[SkillConfig]:
+        return self._skills.get(name)
+
+    def list_skills(self) -> Dict[str, SkillConfig]:
+        return self._skills.copy()
