@@ -19,7 +19,9 @@ class Logger:
         logger.remove()
         logger.add(
             sys.stderr,
-            format="<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | <cyan>{extra[name]}</cyan> - <level>{message}</level>",
+            format="<green>{time:YYYY-MM-DD HH:mm:ss}</green> |\
+            <level>{level: <8}</level> | <cyan>{extra[name]}</cyan>\
+            - <level>{message}</level>",
             level=level,
             colorize=True,
         )

@@ -17,7 +17,6 @@ class PromptRegistry:
         self._prompts: Dict[str, PromptConfig] = {}
 
     def load(self) -> None:
-        """Сценарий загрузки промптов из папки."""
         if not self._prompts_path.exists():
             return
 
@@ -30,7 +29,6 @@ class PromptRegistry:
         )
 
     def _load_single_file(self, file_path: Path) -> None:
-        """Парсинг одного YAML файла."""
         try:
             with open(file_path, "r", encoding="utf-8") as f:
                 data = yaml.safe_load(f)

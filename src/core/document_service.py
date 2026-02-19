@@ -16,7 +16,6 @@ class DocumentService:
         self._logger = logger
 
     def get_documents(self, folder_path: Path) -> List[Document]:
-        """Оркестрирует поиск и загрузку документов."""
         self._logger.info(f"Scanning folder: {folder_path}")
 
         if not folder_path.exists():

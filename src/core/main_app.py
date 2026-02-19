@@ -21,11 +21,11 @@ class App:
         skill_name: Optional[str] = None,
         verbose: bool = False,
     ) -> None:
-        """Основной сценарий анализа."""
         self._setup_logging(verbose)
         self._validate_folder(folder)
 
         prompt = self._prompt_manager.select(prompt_name, skill_name)
+        folder = folder or Path(".")
         documents = self._document_service.get_documents(folder)
 
         if documents:
@@ -33,7 +33,6 @@ class App:
             self._formatter.output(summary)
 
     def list_prompts(self) -> None:
-        """Сценарий отображения доступных промптов."""
         from src.output.tables import display_prompts_table
 
         registry = self._container.prompt_registry()
@@ -41,7 +40,6 @@ class App:
         display_prompts_table(registry.list_prompts())
 
     def list_skills(self) -> None:
-        """Сценарий отображения доступных скиллов."""
         from src.output.tables import display_skills_table
 
         registry = self._container.skill_registry()

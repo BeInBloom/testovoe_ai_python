@@ -32,7 +32,6 @@ class SkillRegistry:
         self._skills: Dict[str, SkillConfig] = {}
 
     def load(self) -> None:
-        """Сценарий загрузки скиллов."""
         self._logger.info(f"Loading skills from {self._skills_path}")
         if not self._skills_path.exists():
             return
@@ -44,7 +43,6 @@ class SkillRegistry:
         self._logger.info(f"Loaded {len(self._skills)} skill(s)")
 
     def _load_from_format(self, pattern: str, loader_func: Any) -> None:
-        """Итерирует по файлам определенного формата."""
         for file_path in self._skills_path.glob(pattern):
             loader_func(file_path)
 

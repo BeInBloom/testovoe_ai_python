@@ -19,7 +19,6 @@ class DocumentCollector:
         self._max_file_size_bytes = max_file_size_bytes
 
     def collect(self, file_paths: List[Path]) -> List[Document]:
-        """Оркестрирует фильтрацию и чтение документов."""
         documents = []
 
         for file_path in file_paths:
@@ -44,7 +43,6 @@ class DocumentCollector:
         if not file_path.is_file():
             return True
 
-        # Проверка размера
         try:
             file_size = file_path.stat().st_size
             if file_size > self._max_file_size_bytes:
@@ -55,7 +53,6 @@ class DocumentCollector:
         except OSError:
             return True
 
-        # Проверка наличия подходящего ридера
         reader = self._reader_factory.get_reader(file_path)
         if reader is None:
             self._logger.debug(f"No reader for {file_path}, skipping.")

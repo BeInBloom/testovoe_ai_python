@@ -40,7 +40,6 @@ class OpenRouterLLMProvider(LLMProvider):
     def _build_content(
         self, documents: List[Document], prompt: str
     ) -> List[Dict[str, Any]]:
-        """Собирает контент сообщения из промпта и документов."""
         content: List[Dict[str, Any]] = [{"type": "text", "text": prompt}]
         for doc in documents:
             item = self._format_document_item(doc)
@@ -49,7 +48,6 @@ class OpenRouterLLMProvider(LLMProvider):
         return content
 
     def _format_document_item(self, doc: Document) -> Optional[Dict[str, Any]]:
-        """Форматирует один документ в структуру API."""
         if doc.content.content_type in [ContentType.TEXT, ContentType.MULTIMODAL]:
             return {
                 "type": "text",
@@ -66,7 +64,6 @@ class OpenRouterLLMProvider(LLMProvider):
         reraise=True,
     )
     def _execute_interaction(self, messages: List[Dict[str, Any]]) -> str:
-        """Выполняет сетевой запрос и обрабатывает результат."""
         headers = self._get_headers()
         payload = {"model": self._model, "messages": messages}
 
@@ -92,7 +89,6 @@ class OpenRouterLLMProvider(LLMProvider):
         }
 
     def _process_response(self, response: requests.Response) -> str:
-        """Валидирует и парсит ответ API."""
         if response.status_code != 200:
             self._handle_error(response)
 
@@ -103,7 +99,6 @@ class OpenRouterLLMProvider(LLMProvider):
         return data["choices"][0]["message"]["content"]
 
     def _handle_error(self, response: requests.Response) -> None:
-        """Обработка ошибок API."""
         error_msg = response.text
         self._logger.error(f"API Error {response.status_code}: {error_msg}")
 

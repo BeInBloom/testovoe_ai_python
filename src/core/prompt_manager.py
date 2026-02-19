@@ -19,7 +19,6 @@ class PromptManager:
     def select(
         self, prompt_name: Optional[str] = None, skill_name: Optional[str] = None
     ) -> str:
-        """Сценарий выбора промпта."""
         self._load_registries()
 
         if skill_name:

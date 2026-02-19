@@ -14,7 +14,6 @@ class FolderScanner:
         self._recursive = recursive
 
     def scan(self, folder_path: Path) -> Generator[Path, None, None]:
-        """Только обход папок, без фильтрации содержимого."""
         try:
             for item in folder_path.iterdir():
                 if item.is_file():

@@ -26,7 +26,6 @@ class PdfReader:
         )
 
     def _extract_text_from_pdf(self, file_path: Path) -> str:
-        """Extract text from PDF using pdfplumber."""
         try:
             with pdfplumber.open(file_path) as pdf:
                 text = ""

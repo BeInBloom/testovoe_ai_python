@@ -20,7 +20,6 @@ class Formatter:
         self._console = Console()
 
     def output(self, summary: str) -> None:
-        """Отображает результат в красивой панели."""
         content = self._formatter.format(summary)
         panel = Panel(content, title="Summary", border_style="green")
         self._console.print(panel)

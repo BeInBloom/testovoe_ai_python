@@ -7,7 +7,6 @@ from rich.table import Table
 
 
 def _display_registry_table(title: str, items: Dict[str, Any]) -> None:
-    """Общий рендерер для таблиц из реестра."""
     console = Console()
     table = Table(title=title, box=box.SIMPLE)
     table.add_column("Name", style="cyan", no_wrap=True)
@@ -29,7 +28,6 @@ def display_skills_table(skills: Dict[str, Any]) -> None:
 
 
 def display_error(message: str, verbose: bool = False) -> None:
-    """Красивый вывод ошибки."""
     console = Console()
     panel = Panel(message, title="Error", border_style="red")
     console.print(panel)

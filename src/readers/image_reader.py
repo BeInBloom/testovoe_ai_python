@@ -35,14 +35,9 @@ class ImageReader:
         )
 
     def _extract_text_from_image(self, file_path: Path) -> str:
-        """Extract text from image using EasyOCR."""
         try:
-            # Read image and extract text
             results = self._reader.readtext(str(file_path), detail=0)
-
-            # Combine all text results
             text = " ".join(results)
-
             return text.strip()
         except Exception as e:
             return f"Error extracting text from {file_path.name}: {str(e)}"

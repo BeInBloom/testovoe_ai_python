@@ -25,7 +25,6 @@ class FileProgress:
         self._progress.stop()
 
     def track(self, callback: Callable[[Any], None]) -> None:
-        """Сценарий отслеживания прогресса выполнения."""
         task_id = self._progress.add_task(self._description, total=len(self._items))
 
         for item in self._items:

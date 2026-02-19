@@ -1,3 +1,12 @@
+# Короткое саммари от меня, а не от нейро хрючего.
+
+Пришлось парсить все файлы "руками", так как нейронки перегружены бесплатные.
+По этому картинка, где плохой текст, распозналась плохо. Так же gemeni сделала норм распознование
+когда я кидал в нее на прямую. Так же есть проблемы с логированием и флагом --verbose, но этим
+мне уже лень заниматься. Так же есть бак с таск баром, который то появляется, то нет.
+Этим тоже мне лень заниматься. Сама структура модульная, но из-за объема кода и сжатого времени
+много что было сделано нейронкой.
+
 # AI Document Summarizer
 
 A Python CLI application that analyzes documents in a folder and generates summaries using AI (LLM).
@@ -15,22 +24,26 @@ A Python CLI application that analyzes documents in a folder and generates summa
 ## Installation
 
 1. Install `uv` (if not installed):
+
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
 2. Create virtual environment and install dependencies:
+
 ```bash
 uv venv
 uv sync
 ```
 
 3. Activate virtual environment:
+
 ```bash
 source .venv/bin/activate
 ```
 
 4. Configure environment variables:
+
 ```bash
 cp .env.example .env
 # Edit .env with your OpenRouter API key
@@ -39,11 +52,13 @@ cp .env.example .env
 ## Usage
 
 Run the application:
+
 ```bash
 python main.py /path/to/folder
 ```
 
 If no folder path is provided, the current directory is used:
+
 ```bash
 python main.py
 ```
@@ -64,15 +79,15 @@ MAX_RETRIES=3
 
 ### Configuration Options
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `OPENROUTER_API_KEY` | Your OpenRouter API key | Required |
-| `OPENROUTER_MODEL` | Model to use for summarization | `z-ai/glm-4.5-air:free` |
-| `MAX_FILE_SIZE_MB` | Maximum file size to process (MB) | `10` |
-| `SKILLS_PATH` | Path to skills configuration | `src/skills/.config/happy_smile` |
-| `RECURSIVE_SCAN` | Scan subfolders recursively | `true` |
-| `REQUEST_TIMEOUT` | HTTP request timeout (seconds) | `10` |
-| `MAX_RETRIES` | Maximum retry attempts for API calls | `3` |
+| Variable             | Description                          | Default                          |
+| -------------------- | ------------------------------------ | -------------------------------- |
+| `OPENROUTER_API_KEY` | Your OpenRouter API key              | Required                         |
+| `OPENROUTER_MODEL`   | Model to use for summarization       | `z-ai/glm-4.5-air:free`          |
+| `MAX_FILE_SIZE_MB`   | Maximum file size to process (MB)    | `10`                             |
+| `SKILLS_PATH`        | Path to skills configuration         | `src/skills/.config/happy_smile` |
+| `RECURSIVE_SCAN`     | Scan subfolders recursively          | `true`                           |
+| `REQUEST_TIMEOUT`    | HTTP request timeout (seconds)       | `10`                             |
+| `MAX_RETRIES`        | Maximum retry attempts for API calls | `3`                              |
 
 ## Architecture
 
@@ -126,6 +141,7 @@ ai/
 ## Retry Logic
 
 The application uses Tenacity for automatic retry:
+
 - **Exponential backoff + jitter**: 1s → 10s max
 - **Retry conditions**: HTTP errors, rate limits (429), timeouts
 - **Max retries**: 3 attempts
@@ -133,10 +149,10 @@ The application uses Tenacity for automatic retry:
 
 ## Supported File Types
 
-| Type | Extensions | Method |
-|------|------------|--------|
-| Text | `.txt`, `.md`, `.markdown` | Text content |
-| PDF | `.pdf` | Base64 → OpenRouter file |
+| Type   | Extensions                               | Method                        |
+| ------ | ---------------------------------------- | ----------------------------- |
+| Text   | `.txt`, `.md`, `.markdown`               | Text content                  |
+| PDF    | `.pdf`                                   | Base64 → OpenRouter file      |
 | Images | `.jpg`, `.jpeg`, `.png`, `.gif`, `.webp` | Base64 → OpenRouter image_url |
 
 ## Development
