@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from src.dependencies import Container
@@ -16,9 +16,9 @@ class App:
 
     def run(
         self,
-        folder: Optional[Path] = None,
-        prompt_name: Optional[str] = None,
-        skill_name: Optional[str] = None,
+        folder: Path | None = None,
+        prompt_name: str | None = None,
+        skill_name: str | None = None,
         verbose: bool = False,
     ) -> None:
         self._setup_logging(verbose)
@@ -51,7 +51,7 @@ class App:
             self._logger.set_level("DEBUG")
         self._logger.info("Initializing document analysis...")
 
-    def _validate_folder(self, folder: Optional[Path]) -> None:
+    def _validate_folder(self, folder: Path | None) -> None:
         if not folder:
             raise ValueError(
                 "Folder path is required. Please provide a path to the documents."

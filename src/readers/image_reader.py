@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import Dict, List, Optional
 
 import easyocr
 
@@ -7,7 +6,7 @@ from src.domain.models import ContentType, DocumentContent
 
 
 class ImageReader:
-    _MIME_TYPES: Dict[str, str] = {
+    _MIME_TYPES: dict[str, str] = {
         ".jpg": "image/jpeg",
         ".jpeg": "image/jpeg",
         ".png": "image/png",
@@ -15,10 +14,8 @@ class ImageReader:
         ".webp": "image/webp",
     }
 
-    def __init__(self, supported_extensions: Optional[List[str]] = None):
-        self._supported_extensions = supported_extensions or list(
-            self._MIME_TYPES.keys()
-        )
+    def __init__(self, supported_extensions: list[str] | None = None):
+        self._supported_extensions = supported_extensions or list(self._MIME_TYPES.keys())
         self._reader = easyocr.Reader(["ru", "en"])
 
     def supports(self, file_path: Path) -> bool:
@@ -45,5 +42,5 @@ class ImageReader:
     def _get_mime_type(self, file_path: Path) -> str:
         return self._MIME_TYPES.get(file_path.suffix.lower(), "image/jpeg")
 
-    def get_supported_extensions(self) -> List[str]:
+    def get_supported_extensions(self) -> list[str]:
         return self._supported_extensions

@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import List, Optional
 
 import pdfplumber
 
@@ -9,7 +8,7 @@ from src.domain.models import ContentType, DocumentContent
 class PdfReader:
     _MIME_TYPE: str = "application/pdf"
 
-    def __init__(self, supported_extensions: Optional[List[str]] = None):
+    def __init__(self, supported_extensions: list[str] | None = None):
         self._supported_extensions = supported_extensions or [".pdf"]
 
     def supports(self, file_path: Path) -> bool:
@@ -37,5 +36,5 @@ class PdfReader:
         except Exception as e:
             return f"Error extracting text from PDF {file_path.name}: {str(e)}"
 
-    def get_supported_extensions(self) -> List[str]:
+    def get_supported_extensions(self) -> list[str]:
         return self._supported_extensions

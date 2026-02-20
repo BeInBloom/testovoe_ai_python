@@ -1,10 +1,11 @@
-from typing import Any, Callable, List
+from collections.abc import Callable
+from typing import Any
 
 from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn
 
 
 class FileProgress:
-    def __init__(self, items: List[Any], description: str = "Processing"):
+    def __init__(self, items: list[Any], description: str = "Processing"):
         self._items = items
         self._description = description
         self._progress = self._create_progress()

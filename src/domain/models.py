@@ -1,6 +1,5 @@
 from enum import Enum
 from pathlib import Path
-from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -15,9 +14,9 @@ class DocumentContent(BaseModel):
 
     file_path: Path
     content_type: ContentType
-    text_content: Optional[str] = None
-    base64_data: Optional[str] = None
-    mime_type: Optional[str] = None
+    text_content: str | None = None
+    base64_data: str | None = None
+    mime_type: str | None = None
 
 
 class Document(BaseModel):

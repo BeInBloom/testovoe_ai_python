@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Dict, Protocol
+from typing import TYPE_CHECKING, Protocol
 
 if TYPE_CHECKING:
     from src.prompts.registry import PromptConfig
@@ -9,4 +9,4 @@ if TYPE_CHECKING:
 class PromptProvider(Protocol):
     def get_prompt(self, name: str) -> str: ...
 
-    def list_prompts(self) -> Dict[str, PromptConfig]: ...
+    def list_prompts(self) -> dict[str, PromptConfig]: ...

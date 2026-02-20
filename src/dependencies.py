@@ -10,7 +10,6 @@ from src.llm.openrouter import OpenRouterLLMProvider
 from src.output.formatter import ConsoleFormatter, Formatter
 from src.prompts.registry import PromptRegistry
 from src.readers.factory import ReaderFactory
-from src.readers.image_reader import ImageReader
 from src.readers.pdf_reader import PdfReader
 from src.readers.txt_reader import TxtReader
 from src.skills.registry import SkillRegistry
@@ -18,6 +17,18 @@ from src.skills.registry import SkillRegistry
 
 def _mb_to_bytes(mb: int) -> int:
     return mb * 1024 * 1024
+
+
+def _create_audio_video_reader():
+    from src.readers.audio_vide_reader import AudioVideoReader
+
+    return AudioVideoReader()
+
+
+def _create_image_reader():
+    from src.readers.image_reader import ImageReader
+
+    return ImageReader()
 
 
 class Container(containers.DeclarativeContainer):
@@ -49,14 +60,16 @@ class Container(containers.DeclarativeContainer):
 
     txt_reader = providers.Singleton(TxtReader)
     pdf_reader = providers.Singleton(PdfReader)
-    image_reader = providers.Singleton(ImageReader)
+    image_reader = providers.Singleton(_create_image_reader)
+    video_audio_reader = providers.Singleton(_create_audio_video_reader)
 
     reader_factory = providers.Singleton(
         ReaderFactory,
         readers=providers.List(
-            txt_reader,
-            pdf_reader,
-            image_reader,
+            txt_reader.provided,
+            pdf_reader.provided,
+            image_reader.provided,
+            video_audio_reader.provided,
         ),
     )
 
@@ -66,7 +79,6 @@ class Container(containers.DeclarativeContainer):
         model=config.openrouter_model,
         logger=logger,
         timeout=config.request_timeout,
-        max_retries=config.max_retries,
     )
 
     max_file_size_bytes = providers.Callable(

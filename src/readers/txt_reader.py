@@ -1,11 +1,10 @@
 from pathlib import Path
-from typing import List, Optional
 
 from src.domain.models import ContentType, DocumentContent
 
 
 class TxtReader:
-    def __init__(self, supported_extensions: Optional[List[str]] = None):
+    def __init__(self, supported_extensions: list[str] | None = None):
         self._supported_extensions = supported_extensions or [
             ".txt",
             ".md",
@@ -25,8 +24,8 @@ class TxtReader:
         )
 
     def _read_file(self, file_path: Path) -> str:
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             return f.read()
 
-    def get_supported_extensions(self) -> List[str]:
+    def get_supported_extensions(self) -> list[str]:
         return self._supported_extensions

@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
 import toml
 import yaml
@@ -14,8 +14,8 @@ class SkillConfig:
         description: str,
         module: str,
         class_name: str,
-        config: Dict[str, Any],
-        prompt: Optional[str] = None,
+        config: dict[str, Any],
+        prompt: str | None = None,
     ):
         self.name = name
         self.description = description
@@ -29,7 +29,7 @@ class SkillRegistry:
     def __init__(self, skills_path: str, logger: Logger):
         self._skills_path = Path(skills_path)
         self._logger = logger
-        self._skills: Dict[str, SkillConfig] = {}
+        self._skills: dict[str, SkillConfig] = {}
 
     def load(self) -> None:
         self._logger.info(f"Loading skills from {self._skills_path}")
@@ -47,16 +47,16 @@ class SkillRegistry:
             loader_func(file_path)
 
     def _load_yaml_file(self, file_path: Path) -> None:
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             data = yaml.safe_load(f)
         self._add_skill(data, file_path)
 
     def _load_toml_file(self, file_path: Path) -> None:
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             data = toml.load(f)
         self._add_skill(data, file_path)
 
-    def _add_skill(self, data: Dict, file_path: Path) -> None:
+    def _add_skill(self, data: dict, file_path: Path) -> None:
         config = SkillConfig(
             name=data.get("name", file_path.stem),
             description=data.get("description", ""),
@@ -67,8 +67,8 @@ class SkillRegistry:
         )
         self._skills[config.name] = config
 
-    def get(self, name: str) -> Optional[SkillConfig]:
+    def get(self, name: str) -> SkillConfig | None:
         return self._skills.get(name)
 
-    def list_skills(self) -> Dict[str, SkillConfig]:
+    def list_skills(self) -> dict[str, SkillConfig]:
         return self._skills.copy()

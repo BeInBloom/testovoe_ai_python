@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 from rich import box
 from rich.console import Console
@@ -6,7 +6,7 @@ from rich.panel import Panel
 from rich.table import Table
 
 
-def _display_registry_table(title: str, items: Dict[str, Any]) -> None:
+def _display_registry_table(title: str, items: dict[str, Any]) -> None:
     console = Console()
     table = Table(title=title, box=box.SIMPLE)
     table.add_column("Name", style="cyan", no_wrap=True)
@@ -19,11 +19,11 @@ def _display_registry_table(title: str, items: Dict[str, Any]) -> None:
     console.print(table)
 
 
-def display_prompts_table(prompts: Dict[str, Any]) -> None:
+def display_prompts_table(prompts: dict[str, Any]) -> None:
     _display_registry_table("Available Prompts", prompts)
 
 
-def display_skills_table(skills: Dict[str, Any]) -> None:
+def display_skills_table(skills: dict[str, Any]) -> None:
     _display_registry_table("Available Skills", skills)
 
 

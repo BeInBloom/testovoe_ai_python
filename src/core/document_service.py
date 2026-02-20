@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import List
 
 from src.core.document_collector import DocumentCollector
 from src.core.folder_scanner import FolderScanner
@@ -15,13 +14,12 @@ class DocumentService:
         self._collector = collector
         self._logger = logger
 
-    def get_documents(self, folder_path: Path) -> List[Document]:
+    def get_documents(self, folder_path: Path) -> list[Document]:
         self._logger.info(f"Scanning folder: {folder_path}")
 
         if not folder_path.exists():
             raise FileNotFoundError(f"Folder not found: {folder_path}")
 
-        # Собираем пути из генератора
         file_paths = list(self._scanner.scan(folder_path))
 
         if not file_paths:

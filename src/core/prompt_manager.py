@@ -1,5 +1,3 @@
-from typing import Optional
-
 from src.core.logger import Logger
 from src.prompts.registry import PromptRegistry
 from src.skills.registry import SkillRegistry
@@ -17,7 +15,7 @@ class PromptManager:
         self._logger = logger
 
     def select(
-        self, prompt_name: Optional[str] = None, skill_name: Optional[str] = None
+        self, prompt_name: str | None = None, skill_name: str | None = None
     ) -> str:
         self._load_registries()
 
@@ -37,7 +35,7 @@ class PromptManager:
         self._prompt_registry.load()
         self._skill_registry.load()
 
-    def _get_skill_prompt(self, skill_name: str) -> Optional[str]:
+    def _get_skill_prompt(self, skill_name: str) -> str | None:
         skill = self._skill_registry.get(skill_name)
         if skill and skill.prompt:
             self._logger.info(f"Using skill: {skill_name}")
@@ -45,7 +43,7 @@ class PromptManager:
         self._logger.warning(f"Skill not found or has no prompt: {skill_name}")
         return None
 
-    def _get_named_prompt(self, prompt_name: str) -> Optional[str]:
+    def _get_named_prompt(self, prompt_name: str) -> str | None:
         prompt = self._prompt_registry.get(prompt_name)
         if prompt:
             self._logger.info(f"Using prompt: {prompt_name}")

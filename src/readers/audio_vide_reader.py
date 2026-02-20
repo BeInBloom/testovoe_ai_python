@@ -1,8 +1,11 @@
-from faster_whisper.transcribe import Segment, Word
-from src.domain.models import DocumentContent, ContentType
-from faster_whisper import WhisperModel
-from typing import Literal, List, Iterable, Optional
+from collections.abc import Iterable
 from pathlib import Path
+from typing import Literal
+
+from faster_whisper import WhisperModel
+from faster_whisper.transcribe import Segment, Word
+
+from src.domain.models import ContentType, DocumentContent
 
 WhisperModelSize = Literal[
     "tiny", "base", "small", "medium", "large", "large-v2", "large-v3"
@@ -30,7 +33,7 @@ class AudioVideoReader:
 
     def __init__(
         self,
-        model_size: WhisperModelSize,
+        model_size: WhisperModelSize = "small",
         prob_threashold: float = 0.6,
         device: DeviceType = "cpu",
         compute_type: ComputeType = "int8",
@@ -41,7 +44,7 @@ class AudioVideoReader:
     def supports(self, file_path: Path) -> bool:
         return file_path.suffix.lower() in self.SUPPORTED_EXTENSIONS
 
-    def get_supported_extensions(self) -> List[str]:
+    def get_supported_extensions(self) -> list[str]:
         return list(self.SUPPORTED_EXTENSIONS)
 
     def read(self, file_path: Path) -> DocumentContent:
@@ -66,7 +69,7 @@ class AudioVideoReader:
 
         return segments
 
-    def _process_segments(self, segments: Iterable[Segment]) -> List[str]:
+    def _process_segments(self, segments: Iterable[Segment]) -> list[str]:
         processed = []
 
         for segment in segments:

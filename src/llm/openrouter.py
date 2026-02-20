@@ -1,6 +1,5 @@
-from typing import Any, Dict, List, Optional
-
 import requests
+from pydantic import BaseModel, Field, ValidationError
 from tenacity import (
     retry,
     retry_if_exception_type,
@@ -10,8 +9,15 @@ from tenacity import (
 
 from src.core.logger import Logger
 from src.domain.exceptions import LLMConnectionError, LLMResponseError
-from src.domain.models import ContentType, Document
-from src.llm.contracts import LLMProvider
+from src.llm.contracts import LLMProvider, Message
+
+
+class LLMChoice(BaseModel):
+    message: Message
+
+
+class LLMResponse(BaseModel):
+    choices: list[LLMChoice] = Field(..., min_length=1)
 
 
 class OpenRouterLLMProvider(LLMProvider):
@@ -22,38 +28,19 @@ class OpenRouterLLMProvider(LLMProvider):
         api_key: str,
         model: str,
         logger: Logger,
-        timeout: int = 10,
-        max_retries: int = 3,
+        timeout: int = 60,
     ):
         self._api_key = api_key
         self._model = model
         self._logger = logger
         self._timeout = timeout
-        self._max_retries = max_retries
 
-    def generate_summary(self, documents: List[Document], prompt: str) -> str:
-        """Оркестрирует подготовку данных и выполнение запроса."""
-        content = self._build_content(documents, prompt)
-        messages = [{"role": "user", "content": content}]
-        return self._execute_interaction(messages)
-
-    def _build_content(
-        self, documents: List[Document], prompt: str
-    ) -> List[Dict[str, Any]]:
-        content: List[Dict[str, Any]] = [{"type": "text", "text": prompt}]
-        for doc in documents:
-            item = self._format_document_item(doc)
-            if item:
-                content.append(item)
-        return content
-
-    def _format_document_item(self, doc: Document) -> Optional[Dict[str, Any]]:
-        if doc.content.content_type in [ContentType.TEXT, ContentType.MULTIMODAL]:
-            return {
-                "type": "text",
-                "text": f"\n\n--- {doc.path.name} ---\n{doc.content.text_content}",
-            }
-        return None
+    def generate_response(self, messages: list[Message]) -> str:
+        payload = {
+            "model": self._model,
+            "messages": [msg.model_dump() for msg in messages],
+        }
+        return self._execute_interaction(payload)
 
     @retry(
         stop=stop_after_attempt(3),
@@ -63,28 +50,29 @@ class OpenRouterLLMProvider(LLMProvider):
         ),
         reraise=True,
     )
-    def _execute_interaction(self, messages: List[Dict[str, Any]]) -> str:
+    def _execute_interaction(self, payload: dict) -> str:
         headers = self._get_headers()
-        payload = {"model": self._model, "messages": messages}
 
-        self._logger.info(f"Sending request to {self.API_URL}")
-        self._logger.info(f"Payload: {payload}")
+        self._logger.info(f"Sending request to {self.API_URL} (Model: {self._model})")
 
         try:
             response = requests.post(
                 self.API_URL, headers=headers, json=payload, timeout=self._timeout
             )
-            self._logger.info(f"Response status: {response.status_code}")
             return self._process_response(response)
-        except requests.exceptions.RequestException as e:
-            self._logger.error(f"LLM request failed: {str(e)}")
-            raise LLMConnectionError(f"Connection error: {str(e)}")
 
-    def _get_headers(self) -> Dict[str, str]:
+        except requests.exceptions.Timeout as e:
+            self._logger.error("LLM API request timed out.")
+            raise LLMConnectionError("Request to OpenRouter timed out.") from e
+
+        except requests.exceptions.RequestException as e:
+            self._logger.error(f"LLM request failed: {e}")
+            raise LLMConnectionError(f"Connection error: {e}") from e
+
+    def _get_headers(self) -> dict[str, str]:
         return {
             "Authorization": f"Bearer {self._api_key}",
             "Content-Type": "application/json",
-            "HTTP-Referer": "https://github.com/ai-document-summarizer",
             "X-Title": "AI Document Summarizer",
         }
 
@@ -92,11 +80,26 @@ class OpenRouterLLMProvider(LLMProvider):
         if response.status_code != 200:
             self._handle_error(response)
 
-        data = response.json()
-        if not data.get("choices"):
-            raise LLMResponseError("Invalid response format: no choices found")
+        try:
+            raw_data = response.json()
+        except requests.exceptions.JSONDecodeError as e:
+            self._logger.error(f"Received non-JSON response: {response.text[:200]}")
+            raise LLMResponseError(
+                "API returned invalid JSON (possibly a gateway error)."
+            ) from e
 
-        return data["choices"][0]["message"]["content"]
+        try:
+            validated_data = LLMResponse.model_validate(raw_data)
+            content = validated_data.choices[0].message.content
+            if not isinstance(content, str):
+                raise LLMResponseError(
+                    "Expected text response from LLM, got multimodal object."
+                )
+            return content
+
+        except ValidationError as e:
+            self._logger.error(f"Failed to parse LLM response: {e}")
+            raise LLMResponseError(f"Invalid response schema: {e}") from e
 
     def _handle_error(self, response: requests.Response) -> None:
         error_msg = response.text
@@ -104,5 +107,9 @@ class OpenRouterLLMProvider(LLMProvider):
 
         if response.status_code == 404:
             raise LLMResponseError(f"Model not found: {self._model}")
+        elif response.status_code == 401:
+            raise LLMResponseError("Invalid OpenRouter API Key.")
+        elif response.status_code == 429:
+            raise LLMResponseError("Rate limit exceeded or insufficient funds.")
 
         response.raise_for_status()

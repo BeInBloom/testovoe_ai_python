@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import List, Optional
 
 from src.core.logger import Logger
 from src.domain.exceptions import DocumentReadError
@@ -18,7 +17,7 @@ class DocumentCollector:
         self._logger = logger
         self._max_file_size_bytes = max_file_size_bytes
 
-    def collect(self, file_paths: List[Path]) -> List[Document]:
+    def collect(self, file_paths: list[Path]) -> list[Document]:
         documents = []
 
         for file_path in file_paths:
@@ -60,7 +59,7 @@ class DocumentCollector:
 
         return False
 
-    def _read_document(self, file_path: Path) -> Optional[Document]:
+    def _read_document(self, file_path: Path) -> Document | None:
         reader = self._reader_factory.get_reader(file_path)
         if not reader:
             return None
