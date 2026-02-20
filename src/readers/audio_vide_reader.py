@@ -68,7 +68,6 @@ class AudioVideoReader:
 
     def _process_segments(self, segments: Iterable[Segment]) -> List[str]:
         processed = []
-        # some comment!
 
         for segment in segments:
             clean_text = self._format_segment(segment)
